@@ -12,19 +12,27 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to Library!');
 });
 
+function getBooksByTitle(title: string): Book[] {
+    return books.filter((book) => book.title.startsWith(title));
+}
+
 app.get('/books', (req: Request, res: Response) => {
     if (req.query.title) {
         const title = req.query.title as string;
-        const filteredBooks = books.filter((book) => book.title.startsWith(title));
+        const filteredBooks = getBooksByTitle(title);
         res.json(filteredBooks);
     } else {
         res.json(books);
     }
 });
 
+function getBooksByIds(id: number): Book[] | undefined {
+    return books.filter((book) => id === (book.id));
+}
+
 app.get('/books/:id', (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const book = books.find((book) => book.id === id);
+    const book = getBooksByIds(id);
     if (book) {
         res.json(book);
     } else {
@@ -32,24 +40,30 @@ app.get('/books/:id', (req: Request, res: Response) => {
     }
 });
 
-app.post('/books', (req: Request, res: Response) => {
-    const newBook: Book = req.body;
-    if (!newBook) {
-        res.status(400).send('Invalid book');
-        return
+function addOrUpdateBook(newBook: Book): Book | null {
+    if (!newBook.title) {
+        return null;
     }
-    
+
     const existingBookIndex = books.findIndex(book => book.id === newBook.id);
 
     if (existingBookIndex !== -1) {
-        console.log(books[existingBookIndex].title);
         books[existingBookIndex] = newBook;
-        console.log(books[existingBookIndex].title);
-        res.status(200).json(newBook);
+        return newBook;
     } else {
         newBook.id = books.length + 1;
         books.push(newBook);
-        res.status(200).json(newBook);
+        return newBook;
+    }
+}
+
+app.post('/books', (req: Request, res: Response) => {
+    const newBook = req.body;
+    const result = addOrUpdateBook(newBook);
+    if (result) {
+        res.status(200).json(result);
+    } else {
+        res.status(400).send('Invalid book');
     }
 });
 

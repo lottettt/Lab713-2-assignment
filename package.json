@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/server.js",
-		"build": "tsc",
-		"dev": "ts-node src/server.ts"
+    "build": "tsc",
+    "dev": "nodemon",
+    "test": "ts-node src/lab.ts"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9"
   }
 }

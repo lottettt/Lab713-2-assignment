@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 
 const app = express();
 const port = 3000;
+app.use(express.json());
 
 app.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);
@@ -31,7 +32,28 @@ app.get('/books/:id', (req: Request, res: Response) => {
     }
 });
 
-interface Event {
+app.post('/books', (req: Request, res: Response) => {
+    const newBook: Book = req.body;
+    if (!newBook) {
+        res.status(400).send('Invalid book');
+        return
+    }
+    newBook.id = books.length + 1;
+    const existingBookIndex = books.findIndex(book => book.id === newBook.id);
+
+    if (existingBookIndex !== -1) {
+        console.log(books[existingBookIndex].title);
+        books[existingBookIndex] = newBook;
+        console.log(books[existingBookIndex].title);
+        res.status(200).json(newBook);
+    } else {
+        
+        books.push(newBook);
+        res.status(200).json(newBook);
+    }
+});
+
+interface Book {
     id: number;
     title: string;
     author_name: string;
@@ -39,7 +61,7 @@ interface Event {
     groups: string[];
 }
 
-const books: Event[] = [
+const books: Book[] = [
     {
         id: 1,
         title: 'To Kill a Mockingbird',
@@ -104,7 +126,7 @@ const books: Event[] = [
         groups: ['Classics', 'Epic']
     },
     {
-        id: 10,
+        id: 11,
         title: 'Crime and Punishment',
         author_name: 'Fyodor Dostoevsky',
         description: 'A novel about the mental anguish and moral dilemmas of an impoverished ex-student who kills a pawnbroker.',

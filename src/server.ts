@@ -5,17 +5,21 @@ const port = 3000;
 
 app.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);
-    });
+});
 
-    
 app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to Library!');
-    });
-
+});
 
 app.get('/books', (req: Request, res: Response) => {
-    res.json(books);
-    });
+    if (req.query.title) {
+        const title = req.query.title as string;
+        const filteredBooks = books.filter((book) => book.title.startsWith(title));
+        res.json(filteredBooks);
+    } else {
+        res.json(books);
+    }
+});
 
 interface Event {
     title: string;

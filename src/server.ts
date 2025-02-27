@@ -38,7 +38,7 @@ app.post('/books', (req: Request, res: Response) => {
         res.status(400).send('Invalid book');
         return
     }
-    newBook.id = books.length + 1;
+    
     const existingBookIndex = books.findIndex(book => book.id === newBook.id);
 
     if (existingBookIndex !== -1) {
@@ -47,7 +47,7 @@ app.post('/books', (req: Request, res: Response) => {
         console.log(books[existingBookIndex].title);
         res.status(200).json(newBook);
     } else {
-        
+        newBook.id = books.length + 1;
         books.push(newBook);
         res.status(200).json(newBook);
     }
